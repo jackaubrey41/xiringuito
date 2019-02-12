@@ -57,3 +57,31 @@ Smart contract de pago. El usuario presenta su @publica en una tarjeta de descue
 
 La transferencia de los tokens está limitada al manager y al owner.
 
+
+20120212 Definición del proyecto
+
+Dispondremos de dos tokens en el proyecto. Uno para gestionar los permisos de voto y otro para realizar los pagos en el local.
+
+Token 1: Token de voto. Nombre XVOTE
+Token 2: Token de pago. Nombre XMONEY
+
+ICO_contract
+
+Realizaremos un smartcontract encargado de gestionar el proceso de inversión y registro de los socios Nombre ICO_contract.
+A los inversores en nuestro proyecto les daremos los dos tipos de token a cambio de su contribución. El smart contract estará disponible de forma permanente para que los clientes puedan recargar su saldo.
+Entregaremos  1 XVOTE y 1 XMONEY por cada 0.01 Ether invertido por el socio. Adicionalmente les solicitaremos e-mail de contacto, nombre y apellidos. 
+Añadiremos un función para poder actualizar el email, nombre o apellido de una determinada dirección de inversor.
+
+Local_contract
+
+Los XMONEY se consumiran a cambio de servicios.
+
+Función COBRO: 
+El local restará los XMONEY cuando el usuario consuma en el local. La orden de pago pueder ser ordenada directamente por el local. La ejecución de la transferencia de pago no requerira disponer de Ether para pagar en la cuenta del usuario.
+
+Función PAGO: 
+Adicinalmente el ususario dispondrá de la función de pagar y podrá ejecutar el apgo por iniciativa propia.
+El ususario tendrá accceso a sus tokens de forma que los podrá trasnferir a otro usuario.
+El usuario deberá poder consulatr su saldo.
+
+
