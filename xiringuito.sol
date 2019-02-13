@@ -46,18 +46,20 @@ contract Xiringuito {
 
     function contribute() public payable {
         require(msg.value > 0.01 ether); // contribución minima correspondiente a un token
-        require(ERC20Interface(xmoney).totalSupply() > 0, "We not can accept more investors");
-        require(ERC20Interface(vmoney).totalSupply() > 0, "We not can accept more investors");
-//        require(ERC20Interface(token).totalSupply() > uint(msg.value/minimumContribution), "We not have token for this investor");
-        
-        
-//       approvers[msg.sender] = true;
-//        approversCount += uint(msg.value/minimumContribution);
-        
-//        ERC20Interface(xmoney).transfer(msg.sender, uint(msg.value/minimumContribution));
+        require(ERC20Interface(xmoney).totalSupply() > 0, "We don't have more money tokens");
+        require(ERC20Interface(vmoney).totalSupply() > 0, "We don't have more vote tokens");
+
         ERC20Interface(xmoney).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
         ERC20Interface(xvote).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
     }
+
+    function transferToBar (address _sociAddressWallet, uint _amount) public restricted { // funcion para realizar el pago al bar
+        sociAddresswallet = _sociAddreswallet;                                             // de momento restrigida al manager
+        amount = _amount;
+
+        ERC20Interface(xmoney).transferFrom (sociAdressWallet, manager, amount);
+    }
+
 
     function createProposal (string description) public restricted {
         Proposal memory newProposal = Proposal({
@@ -84,4 +86,6 @@ contract Xiringuito {
         proposal.open = false;                                      //cerramos la propuesta
     }
 
-  
+
+
+} 
