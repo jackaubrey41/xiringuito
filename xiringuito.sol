@@ -13,16 +13,16 @@ contract Xiringuito {
         mapping(address => bool) votedAlready;
     }
     
-    Proposal[] public proposal;
+    Proposal[] public proposals;
     address public manager;
     
    // constante minimumContribution a 0.01 Ether require
    
     struct Soci {
-        string _name
-        string email
-        string pasword
-        string dateRegister
+        string _name;
+        string email;
+        string pasword;
+        string dateRegister;
     }
     
     Soci [] public soci; // un array??
@@ -62,31 +62,26 @@ contract Xiringuito {
     function createProposal (string description) public restricted {
         Proposal memory newProposal = Proposal({
             description: description,
-            open: false;
+            open: false,
             voteCount: 0
         });
 
         proposal.push(newProposal); // Introducimos una nueva propuesta en el array de propuestas.
     }
 
-    function voteProposal (uint index) public {             //debemos indicar la propuesta a votar
-        Proposal storage proposal = requests[index];
+    function voteProposal (uint index) public {                     //debemos indicar la propuesta a votar
+        Proposal storage proposal = proposals[index];
+        require (proposal.open = true);                             // requiere que la propuesta esté abierta
+        require(ERC20Interface(xvote).balanceOf(msg.sender)>0);     // requiere que el votante tenga votos en su saldo
+        require(!proposal.votedAlready[msg.sender]);                // requiere que no haya votado antes
 
-        require(approvers[msg.sender]);
-        require(!request.approvals[msg.sender]);
-
-        request.approvals[msg.sender] = true;
-        request.approvalCount += ERC20Interface(token).balanceOf(msg.sender);
+        proposal.votedAlready[msg.sender] = true;           // unicamente puede votar una vez la prouesta
+        proposal.voteCount += ERC20Interface(xvote).balanceOf(msg.sender);
     }
 
-    function finalizeRequest(uint index) public restricted {
-        Request storage request = requests[index];
-
-        require(request.approvalCount > (approversCount / 2));
-        require(!request.complete);
-
-        request.recipient.transfer(request.value);
-        request.complete = true;
+    function closePropousal(uint index) public restricted {
+        Proposal storage proposal = proposals[index];
+        proposal.open = false;                                      //cerramos la propuesta
     }
 
     function getSummary() public view returns (
