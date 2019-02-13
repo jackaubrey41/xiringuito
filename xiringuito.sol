@@ -13,7 +13,7 @@ contract Xiringuito {
         mapping(address => bool) votedAlready;
     }
     
-    Proposal[] public proposals;
+    Proposal[] public proposals;                    // array con las propuesats a votar
     address public manager;
     
    // constante minimumContribution a 0.01 Ether require
@@ -25,8 +25,8 @@ contract Xiringuito {
         string dateRegister;
     }
     
-    Soci [] public soci; // un array??
-    mapping(address => soci) public mapSocis;// Mapping?
+    Soci [] public soci;                        // array con los socios que han realziado el contribute 
+    mapping(address => soci) public mapSocis;   // Mapping de la dirección de los socios
     
     
     address public xmoney;
@@ -37,8 +37,8 @@ contract Xiringuito {
         _;
     }
 
-    function createTokens ( address creator) public { // @xiringuito tendrria los 100M de los dos tokens
-        manager = creator;
+    constructor ( address barOwner) public {     // @xiringuito tiene los 100M de los dos tokens
+        manager = barOwner;                      // el creador del contrato queda como manager por defecto
         xmoney = new XMONEY_ERC20;
         xvote = new XVOTE_ERC20;
     }
@@ -84,19 +84,4 @@ contract Xiringuito {
         proposal.open = false;                                      //cerramos la propuesta
     }
 
-    function getSummary() public view returns (
-      uint, uint, uint, uint, address
-      ) {
-        return (
-          minimumContribution,
-          this.balance,
-          requests.length,
-          approversCount,
-          manager
-        );
-    }
-
-    function getRequestsCount() public view returns (uint) {
-        return requests.length;
-    }
-}
+  
