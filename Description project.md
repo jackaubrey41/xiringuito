@@ -72,7 +72,7 @@ A los inversores en nuestro proyecto les daremos los dos tipos de token a cambio
 Entregaremos  1 XVOTE y 1 XMONEY por cada 0.01 Ether invertido por el socio. Adicionalmente les solicitaremos e-mail de contacto, nombre y apellidos en su primera inversión.
 Añadiremos un función para poder actualizar el email, nombre o apellido de una determinada dirección de inversor.
 
-Local_contract
+payment_contract
 
 Los XMONEY se consumiran a cambio de servicios.
 
@@ -88,6 +88,6 @@ El usuario podrá transferir su saldo a otra cuenta.
 Vote_contract
 
 El saldo disponible de XVOTE permitirá votar a los usuarios diferentes iniciativas propuestas por el establecimiento. 
-El usuario vota una única vez por cada propuesta presentada. Puesto que cada XVOTE equivale a un voto, el usuario que haya realziado mayor inversión acumulada tendrá mayor peso de decisión. 
+El usuario vota una única vez por cada propuesta presentada. Puesto que cada XVOTE equivale a un voto, el usuario que haya realizado mayor inversión acumulada tendrá mayor peso de decisión. 
 
 
