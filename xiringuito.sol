@@ -33,7 +33,7 @@ contract Xiringuito {
     address public xvote;
 
     modifier restricted() {
-        require(msg.sender == manager);
+        require(msg.sender == manager, "el deployador es el manager");
         _;
     }
 
@@ -45,7 +45,7 @@ contract Xiringuito {
 
 
     function contribute() public payable {
-        require(msg.value > 0.01 ether); // contribución minima correspondiente a un token
+        require(msg.value > 0.01 ether, "debe invertir 0.01 Ether minimo"); // contribución minima correspondiente a un token
 //        require(ERC20Interface(xmoney).totalSupply() > 0, "We not can accept more investors");
         require(ERC20Interface(xvote).totalSupply() > 0, "We not can accept more investors");
 //        require(ERC20Interface(token).totalSupply() > uint(msg.value/minimumContribution), "We not have token for this investor");
@@ -62,7 +62,7 @@ contract Xiringuito {
     function createProposal (string description) public restricted {
         Proposal memory newProposal = Proposal({
             description: description,
-            open: true,                             // la propousal abierta está en true
+            open: true,
             voteCount: 0                            // NO ha sido votada
         });
 
@@ -71,10 +71,11 @@ contract Xiringuito {
 
     function voteProposal (uint index) public {             //debemos indicar el indice de la propuesta a votar
         Proposal storage proposal = proposals[index];
-        require( ERC20Interface(xvote).balanceOf(msg.sender)>0);    // debemos tener dos condicones, que tenga tokens para votar
-        require(!proposal.votedAlready[msg.sender]);                // y que no haya votado antes
+
+        require(ERC20Interface(xvote).balanceOf(msg.sender) > 0, "debemos tener tokens de voto");
+        require(!proposal.votedAlready[msg.sender], " no debe ahaber votado");                // y que no haya votado antes
         
-        proposal.votedAlready[msg.sender]= true;                            // anotamos que ya ha votado. 
+        proposal.votedAlready[msg.sender] = true;                            // anotamos que ya ha votado. 
         proposal.voteCount += ERC20Interface(xvote).balanceOf(msg.sender); // anotamos un voto por token en el saldo del votante
     }
 
