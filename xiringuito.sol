@@ -47,7 +47,7 @@ contract Xiringuito {
     function contribute() public payable {
         require(msg.value > 0.01 ether, "debe invertir 0.01 Ether minimo"); // contribución minima correspondiente a un token
 //        require(ERC20Interface(xmoney).totalSupply() > 0, "We not can accept more investors");
-        require(ERC20Interface(xvote).totalSupply() > 0, "We not can accept more investors");
+//        require(ERC20Interface(xvote).totalSupply() > 0, "We not can accept more investors"); // peta
 //        require(ERC20Interface(token).totalSupply() > uint(msg.value/minimumContribution), "We not have token for this investor");
         
         
@@ -55,7 +55,7 @@ contract Xiringuito {
 //        approversCount += uint(msg.value/minimumContribution);
         
 //        ERC20Interface(xmoney).transfer(msg.sender, uint(msg.value/minimumContribution));
-        ERC20Interface(xmoney).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
+//        ERC20Interface(xmoney).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
         ERC20Interface(xvote).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
     }
 
