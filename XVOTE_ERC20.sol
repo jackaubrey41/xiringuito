@@ -88,8 +88,8 @@ contract XVOTE_ERC20 is ERC20Interface, Owned, SafeMath {
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = XVOTE;
-        name = VotoXiringuito;
+        symbol = "XVOTE";
+        name = "VotoXiringuito";
         decimals = 0;
         _totalSupply = 100000000000000000000000000;
         balances[msg.sender] = _totalSupply;

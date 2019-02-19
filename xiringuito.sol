@@ -1,7 +1,7 @@
 pragma solidity ^0.4.25;
 
 import "./XVOTE_ERC20.sol";
-import "./XMONEY_ERC20.sol";
+//import "./XMONEY_ERC20.sol"; // Da error de duplicado de declaración de funciones.
 
 
 contract Xiringuito {
@@ -13,7 +13,7 @@ contract Xiringuito {
         mapping(address => bool) votedAlready;
     }
     
-    Proposal[] public proposals;                    // array con las propuesats a votar
+    Proposal[] public proposals;
     address public manager;
     
    // constante minimumContribution a 0.01 Ether require
@@ -25,67 +25,71 @@ contract Xiringuito {
         string dateRegister;
     }
     
-    Soci [] public soci;                        // array con los socios que han realziado el contribute 
-    mapping(address => soci) public mapSocis;   // Mapping de la dirección de los socios
+    Soci[] public soci; // un array??
+    mapping(address => Soci) public mapSocis;// Mapping?
     
     
-    address public xmoney;
-    address public vmoney;
+    address public xmoney; // debemos declarar la variable tipo @ del token
+    address public xvote;
 
     modifier restricted() {
         require(msg.sender == manager);
         _;
     }
 
-    constructor ( address barOwner) public {     // @xiringuito tiene los 100M de los dos tokens
-        manager = barOwner;                      // el creador del contrato queda como manager por defecto
-        xmoney = new XMONEY_ERC20;
-        xvote = new XVOTE_ERC20;
+    constructor ( address creator) public { // @xiringuito tendrria los 100M de los dos tokens
+        manager = creator;
+//        xmoney = new XMONEY_ERC20 ();
+        xvote = new XVOTE_ERC20 ();
     }
 
 
     function contribute() public payable {
         require(msg.value > 0.01 ether); // contribución minima correspondiente a un token
-        require(ERC20Interface(xmoney).totalSupply() > 0, "We don't have more money tokens");
-        require(ERC20Interface(vmoney).totalSupply() > 0, "We don't have more vote tokens");
-
+//        require(ERC20Interface(xmoney).totalSupply() > 0, "We not can accept more investors");
+        require(ERC20Interface(xvote).totalSupply() > 0, "We not can accept more investors");
+//        require(ERC20Interface(token).totalSupply() > uint(msg.value/minimumContribution), "We not have token for this investor");
+        
+        
+//       approvers[msg.sender] = true;
+//        approversCount += uint(msg.value/minimumContribution);
+        
+//        ERC20Interface(xmoney).transfer(msg.sender, uint(msg.value/minimumContribution));
         ERC20Interface(xmoney).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
         ERC20Interface(xvote).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
     }
 
-    function transferToBar (address _sociAddressWallet, uint _amount) public restricted { // funcion para realizar el pago al bar
-        sociAddresswallet = _sociAddreswallet;                                             // de momento restrigida al manager
-        amount = _amount;
-
-        ERC20Interface(xmoney).transferFrom (sociAdressWallet, manager, amount);
-    }
-
-
     function createProposal (string description) public restricted {
         Proposal memory newProposal = Proposal({
             description: description,
-            open: false,
-            voteCount: 0
+            open: true,                             // la propousal abierta está en true
+            voteCount: 0                            // NO ha sido votada
         });
 
-        proposal.push(newProposal); // Introducimos una nueva propuesta en el array de propuestas.
+        proposals.push(newProposal);                // Introducimos una nueva propuesta en el array de propuestas.
     }
 
-    function voteProposal (uint index) public {                     //debemos indicar la propuesta a votar
+    function voteProposal (uint index) public {             //debemos indicar el indice de la propuesta a votar
         Proposal storage proposal = proposals[index];
-        require (proposal.open = true);                             // requiere que la propuesta esté abierta
-        require(ERC20Interface(xvote).balanceOf(msg.sender)>0);     // requiere que el votante tenga votos en su saldo
-        require(!proposal.votedAlready[msg.sender]);                // requiere que no haya votado antes
-
-        proposal.votedAlready[msg.sender] = true;           // unicamente puede votar una vez la prouesta
-        proposal.voteCount += ERC20Interface(xvote).balanceOf(msg.sender);
+        require( ERC20Interface(xvote).balanceOf(msg.sender)>0);    // debemos tener dos condicones, que tenga tokens para votar
+        require(!proposal.votedAlready[msg.sender]);                // y que no haya votado antes
+        
+        proposal.votedAlready[msg.sender]= true;                            // anotamos que ya ha votado. 
+        proposal.voteCount += ERC20Interface(xvote).balanceOf(msg.sender); // anotamos un voto por token en el saldo del votante
     }
 
-    function closePropousal(uint index) public restricted {
+    function finalizeProposal(uint index) public restricted {
         Proposal storage proposal = proposals[index];
-        proposal.open = false;                                      //cerramos la propuesta
+        proposal.open = false;
     }
 
-
-
-} 
+    function getVotesPropousalCount( uint index) public view returns (uint) {
+        Proposal memory proposal = proposals[index];
+        return proposal.voteCount;
+    }
+   
+    function getProposalsCount() public view returns (uint) {
+        return proposals.length;
+    }
+    
+}
