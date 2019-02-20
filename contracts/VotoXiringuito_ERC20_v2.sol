@@ -62,4 +62,46 @@ contract XiringuitoToken_ERC20 is ERC20Interface, Owned, SafeMath {
         return true;
     }
    
+   
+    // ------------------------------------------------------------------------
+    // Token owner can approve for spender to transferFrom(...) tokens
+    // from the token owner's account
+    //
+    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
+    // recommends that there are no checks for the approval double-spend attack
+    // as this should be implemented in user interfaces 
+    // ------------------------------------------------------------------------
+    function approve(address spender, uint tokens) public returns (bool success) {
+        allowed[msg.sender][spender] = tokens;
+        emit Approval(msg.sender, spender, tokens);
+        return true;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Transfer tokens from the from account to the to account
+    // 
+    // The calling account must already have sufficient tokens approve(...)-d
+    // for spending from the from account and
+    // - From account must have sufficient balance to transfer
+    // - Spender must have sufficient allowance to transfer
+    // - 0 value transfers are allowed
+    /*
+    TransferFrom
+    The TransferFrom function allows for a smart contract to execute a transfer on behalf of the wallet owner. 
+    Notice the difference: the Transfer is called by the wallet owner him or herself to directly send tokens to another address. 
+    This time, the TransferFrom function allows for a smart contract to send tokens on the wallet owner’s behalf, 
+    such as filling an order on an exchange, releasing funds in a timely manner, or paying our winnings in a game of luck.
+    */
+   // ------------------------------------------------------------------------
+    
+    function transferFrom(address from, address to, uint tokens) public returns (bool success) {
+        balances[from] = safeSub(balances[from], tokens);
+        allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
+        balances[to] = safeAdd(balances[to], tokens);
+        emit Transfer(from, to, tokens);
+        return true;
+    }
+
+   
 }

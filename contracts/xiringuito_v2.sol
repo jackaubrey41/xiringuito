@@ -17,16 +17,14 @@ contract Xiringuito {
    // constante minimumContribution a 0.01 Ether require
    
     struct Soci {
-        string _name;
-        string email;
-        string pasword;
-        string dateRegister;
+        string name;
+//      string email;
     }
     
-    Soci[] public soci; // un array??
+    Soci[] public socis; // un array??
     mapping(address => Soci) public mapSocis;// Mapping?
     
-//    address public MoneyXiringuitoToken;
+    address public MoneyXiringuitoToken;
     address public VotoXiringuitoToken;
 
     modifier restricted() {
@@ -36,18 +34,23 @@ contract Xiringuito {
 
     constructor ( address creator) public { 
         manager = creator;                          // El creador del contrato es el manager.
-//        MoneyXiringuitoToken = new XiringuitoToken_ERC20 ("XMONEY", "XiringuitoMoney");
+        MoneyXiringuitoToken = new XiringuitoToken_ERC20 ("XMONEY", "XiringuitoMoney");
         VotoXiringuitoToken = new XiringuitoToken_ERC20 ("XVOTE","XiringuitoVoto");
     }
 
 
-    function contribute() public payable {
+    function contribute(/*string _name*/) public payable {
         require(msg.value > 0.01 ether, "debe invertir 0.01 Ether minimo"); // contribución minima correspondiente a un token
 
-//        ERC20Interface(MoneyXiringuitoToken).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
+        ERC20Interface(MoneyXiringuitoToken).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
         ERC20Interface(VotoXiringuitoToken).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
-        //Falta anotar los datos del socio
-        
+  /*      
+        // creamos un nuevo socio
+        Soci memory newSoci = Soci ({
+            name: _name
+        });
+        socis.push(newSoci);
+        */
     }
 
     function createProposal (string description) public restricted {
@@ -84,4 +87,22 @@ contract Xiringuito {
         return proposals.length;
     }
     
+    function trasnferMyTokens ( address destino, uint tokensTransferir) public {
+        ERC20Interface(MoneyXiringuitoToken).transfer(destino,tokensTransferir);
+    }
+    
+    function autoricePayment (address autorized, uint importe) public {
+        ERC20Interface(MoneyXiringuitoToken).approve( autorized, importe);
+    }
+    
+    function payMoneyXiringuito (address cliente, address contable, uint importeFactura) public {
+        ERC20Interface(MoneyXiringuitoToken).transferFrom(cliente,contable,importeFactura);
+    }
+    
+    function getSaldoTokens (address wallet) public view returns (uint,uint) {
+        return (
+        ERC20Interface(MoneyXiringuitoToken).balanceOf(wallet),
+        ERC20Interface(VotoXiringuitoToken).balanceOf(wallet)
+        );
+    }
 }
