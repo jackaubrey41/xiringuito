@@ -67,8 +67,8 @@ contract Xiringuito {
         Proposal storage proposal = proposals[index];
 
         require(ERC20Interface(VotoXiringuitoToken).balanceOf(msg.sender) > 0, "debemos tener tokens de voto");
-        require(!proposal.votedAlready[msg.sender], " no debe ahaber votado");                // y que no haya votado antes
-        
+        require(!proposal.votedAlready[msg.sender], " no debe haber votado");                // y que no haya votado antes
+        // tenemos que comprobar que la propuestab este abierta
         proposal.votedAlready[msg.sender] = true;                            // anotamos que ya ha votado. 
         proposal.voteCount += ERC20Interface(VotoXiringuitoToken).balanceOf(msg.sender); // anotamos un voto por token en el saldo del votante
     }
@@ -87,15 +87,15 @@ contract Xiringuito {
         return proposals.length;
     }
     
-    function trasnferMyTokens ( address destino, uint tokensTransferir) public {
+    function trasnferMyTokens ( address destino, uint tokensTransferir) public restricted  {
         ERC20Interface(MoneyXiringuitoToken).transfer(destino,tokensTransferir);
     }
     
-    function autoricePayment (address autorized, uint importe) public {
+    function autoricePayment (address autorized, uint importe) public  {
         ERC20Interface(MoneyXiringuitoToken).approve( autorized, importe);
     }
     
-    function payMoneyXiringuito (address cliente, address contable, uint importeFactura) public {
+    function payMoneyXiringuito (address cliente, address contable, uint importeFactura) public restricted {
         ERC20Interface(MoneyXiringuitoToken).transferFrom(cliente,contable,importeFactura);
     }
     
@@ -106,3 +106,5 @@ contract Xiringuito {
         );
     }
 }
+
+
