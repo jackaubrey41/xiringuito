@@ -63,7 +63,7 @@ Diseño para usuarios cripto.
 Wallet de uso cripto stándard de tokens sobre Ethereum.
 El pago se realiza mediante el approve por parte del propietario a que el el smart contrat pueda retirar tokens de su cuenta en la realización del pago. Requiere disponer de ether en la cuenta para el pago del gas.
 El token se realizará mediante un ERC20 stándard.
-El usuario podrá utilizar y mover sus tókens con autonomía y liberatd pero deberá disponer de gas en ethers para poder realizar transacciones.
+El usuario podrá utilizar y mover sus tókens con autonomía y libertad pero deberá disponer de gas en ethers para poder realizar transacciones.
 
 
 Nota de diseño.
