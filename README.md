@@ -1,5 +1,5 @@
 # xiringuito
-Práctica final Bootcamp Solidity
+Práctica final Bootcamp Solidity versión entrega
 
 
 **Autores:**
