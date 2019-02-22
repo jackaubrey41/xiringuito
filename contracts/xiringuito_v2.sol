@@ -11,19 +11,13 @@ contract Xiringuito {
         mapping(address => bool) votedAlready;
     }
     
+    struct Soci {
+        string nameSoci;
+    }
+     
     Proposal[] public proposals;
     address public manager;
-    
-   // constante minimumContribution a 0.01 Ether require
-   
-    struct Soci {
-        string name;
-//      string email;
-    }
-    
-    Soci[] public socis; // un array??
-    mapping(address => Soci) public mapSocis;// Mapping?
-    
+    mapping(address => Soci) public mapSocis;// Mapping de socios, puede ser tan completo como consideremos necesario. Cuidado con la LGPD.
     address public MoneyXiringuitoToken;
     address public VotoXiringuitoToken;
 
@@ -39,25 +33,24 @@ contract Xiringuito {
     }
 
 
-    function contribute(/*string _name*/) public payable {
+    function contribute(string _nameSoci) public payable {
         require(msg.value > 0.01 ether, "debe invertir 0.01 Ether minimo"); // contribución minima correspondiente a un token
+    
+        uint numberTokens = (msg.value * 100 / 10**18);                         
+        ERC20Interface(MoneyXiringuitoToken).transfer(msg.sender, numberTokens); // por cada ether le damos 100 tokens.
+        ERC20Interface(VotoXiringuitoToken).transfer(msg.sender, numberTokens); // por cada ether le damos 100 tokens.
 
-        ERC20Interface(MoneyXiringuitoToken).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
-        ERC20Interface(VotoXiringuitoToken).transfer(msg.sender, uint(msg.value*100)); // por cada ether le damos 100 tokens.
-  /*      
-        // creamos un nuevo socio
-        Soci memory newSoci = Soci ({
-            name: _name
+        Soci memory newSoci = Soci ({                   // Creamos un nuevo socio
+            nameSoci: _nameSoci
         });
-        socis.push(newSoci);
-        */
+        mapSocis[msg.sender] = newSoci;                  // anotamos datos del nuevo socio en el Mapping
     }
 
     function createProposal (string description) public restricted {
         Proposal memory newProposal = Proposal({
             description: description,
             open: true,
-            voteCount: 0                            // NO ha sido votada
+            voteCount: 0                            
         });
 
         proposals.push(newProposal);                // Introducimos una nueva propuesta en el array de propuestas.
@@ -67,9 +60,9 @@ contract Xiringuito {
         Proposal storage proposal = proposals[index];
 
         require(ERC20Interface(VotoXiringuitoToken).balanceOf(msg.sender) > 0, "debemos tener tokens de voto");
-        require(!proposal.votedAlready[msg.sender], " no debe haber votado");                // y que no haya votado antes
-        // tenemos que comprobar que la propuestab este abierta
-        proposal.votedAlready[msg.sender] = true;                            // anotamos que ya ha votado. 
+        require(!proposal.votedAlready[msg.sender], "el socio no debe haber votado anteriormente esta propuesta"); // y que no haya votado antes
+        require(proposal.open, "la propuesta debe estar abierta para poder votar");  // tenemos que comprobar que la propuesta este abierta
+        proposal.votedAlready[msg.sender] = true;                                         // anotamos que ya ha votado. 
         proposal.voteCount += ERC20Interface(VotoXiringuitoToken).balanceOf(msg.sender); // anotamos un voto por token en el saldo del votante
     }
 
@@ -78,24 +71,30 @@ contract Xiringuito {
         proposal.open = false;
     }
 
+//  Consulta de votos obtenidos por la propuesta
     function getVotesPropousalCount( uint index) public view returns (uint) {
         Proposal memory proposal = proposals[index];
         return proposal.voteCount;
     }
-   
+
+//  Consulta de número de propuestas
     function getProposalsCount() public view returns (uint) {
         return proposals.length;
     }
-    
-    function trasnferMyTokens ( address destino, uint tokensTransferir) public restricted  {
+
+//  Permite al manager transferir Money Xiringuito tokens a un destinatario
+//  Función que utilizaremos desde el manager para gestionar un pago con targeta de crédito
+    function trasnferMoneyXiringuitoToken ( address destino, uint tokensTransferir) public restricted  {
         ERC20Interface(MoneyXiringuitoToken).transfer(destino,tokensTransferir);
     }
     
     function autoricePayment (address autorized, uint importe) public  {
-        ERC20Interface(MoneyXiringuitoToken).approve( autorized, importe);
+        ERC20Interface(MoneyXiringuitoToken).approve(autorized, importe);
     }
     
-    function payMoneyXiringuito (address cliente, address contable, uint importeFactura) public restricted {
+//  Función de pago restringida al manager del negocio o al propietario de los tokens.   
+    function payMoneyXiringuito (address cliente, address contable, uint importeFactura) public {
+        require(cliente == msg.sender || msg.sender == manager, "unicamente el manager o el usuario puede retirar tokens de la cuenta");
         ERC20Interface(MoneyXiringuitoToken).transferFrom(cliente,contable,importeFactura);
     }
     
@@ -106,5 +105,3 @@ contract Xiringuito {
         );
     }
 }
-
-
