@@ -23,9 +23,10 @@ contract Xiringuito {
 
     modifier restricted() {
         require(msg.sender == manager, "el deployador del contrato es el manager que crea y finaliza propuestas");
-        _;
+        _; // añadir require de disponer de tokens en el smart contract
     }
 
+// introducir factory y proxy 
     constructor ( address creator) public { 
         manager = creator;                          // El creador del contrato es el manager.
         MoneyXiringuitoToken = new XiringuitoToken_ERC20 ("XMONEY", "XiringuitoMoney");
@@ -92,10 +93,11 @@ contract Xiringuito {
         ERC20Interface(MoneyXiringuitoToken).approve(autorized, importe);
     }
     
-//  Función de pago restringida al manager del negocio o al propietario de los tokens.   
-    function payMoneyXiringuito (address cliente, address contable, uint importeFactura) public {
+//  Función de pago restringida al manager del negocio o al propietario de los tokens.  
+// contable always manager
+    function payMoneyXiringuito (address cliente, uint importeFactura) public {
         require(cliente == msg.sender || msg.sender == manager, "unicamente el manager o el usuario puede retirar tokens de la cuenta");
-        ERC20Interface(MoneyXiringuitoToken).transferFrom(cliente,contable,importeFactura);
+        ERC20Interface(MoneyXiringuitoToken).transferFrom(cliente,manager,importeFactura);
     }
     
     function getSaldoTokens (address wallet) public view returns (uint,uint) {
