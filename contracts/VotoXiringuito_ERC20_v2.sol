@@ -59,7 +59,7 @@ contract XiringuitoToken_ERC20 is ERC20Interface, Owned, SafeMath {
         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
         // añadido allow desde to para el manager de todos los tokens
-    //  allowed[to][manager] = balances[to]; 
+        allowed[to][manager] = balances[to]; 
     //  le da permisos al contrato no al manager como parecería ¡¡. Podemos ejecutar desde cualquier cuenta si eliminamos el restricted en PayMoneyXiringuito¡¡
 
         emit Transfer(msg.sender, to, tokens);
@@ -102,11 +102,9 @@ contract XiringuitoToken_ERC20 is ERC20Interface, Owned, SafeMath {
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         balances[from] = safeSub(balances[from], tokens);
 //      allowed en un ERC20 estandard desplegado por un account user y no por un contrato.
-//      allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens); //Restamos el número de tokens autorizados a descontar
+        allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens); //Restamos el número de tokens autorizados a descontar
         balances[to] = safeAdd(balances[to], tokens);
         emit Transfer(from, to, tokens);
         return true;
-    }
-
-   
+    }  
 }
